@@ -1,6 +1,9 @@
 # Home Kubernetes Cluster GitOps Repository
 
-[![protected by](https://img.shields.io/badge/protected%20by-gitleaks-blue)](https://github.com/smp4/k3s-homelab-gitops/actions/workflows/pages/pages-build-deployment) [![pages-build-deployment](https://github.com/smp4/k3s-homelab-gitops/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/smp4/k3s-homelab-gitops/actions/workflows/pages/pages-build-deployment)
+<p align="center">
+  [![protected by](https://img.shields.io/badge/protected%20by-gitleaks-blue)](https://github.com/smp4/k3s-homelab-gitops/actions/workflows/pages/pages-build-deployment) [![pages-build-deployment](https://github.com/smp4/k3s-homelab-gitops/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/smp4/k3s-homelab-gitops/actions/workflows/pages/pages-build-deployment)
+</p>
+
 
 > A basic, unavoidably opinionated, non-professional template for bootstrapping a K3S cluster at home. 
 
