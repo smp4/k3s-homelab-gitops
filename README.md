@@ -50,7 +50,7 @@ This repo is also not necessarily following security best practices. That's a fu
 
 The [Installation](docs/howtos/installation.md) docs describe how to set up and install this Git repo on your local machine including getting the repo, installing Ansible, generating secrets and configuring the Ansible inventory and variables.
 
-For more detailed docs, see the [docs](smp4.github.io/k3s-homelab-gitops).
+For more detailed docs, see the [docs](https://smp4.github.io/k3s-homelab-gitops/).
 
 ## Support
 
@@ -77,11 +77,11 @@ This is more of a wishlist than a roadmap.
 
 ## Acknowledgements and Inspiration
 
-- [Techno Tim](https://github.com/techno-tim/k3s-ansible/tree/master)
-- [Hari Sekohn Kubernetes-configs](https://github.com/HariSekhon/Kubernetes-configs/tree/master)
-- [Ric Sanfre Pi Kubernetes Cluster Project](https://picluster.ricsanfre.com/)
-- [k3s-ansible](https://github.com/k3s-io/k3s-ansible/)
-- [k3s-ansible Jon Stumpf](https://github.com/jon-stumpf/k3s-ansible)
+- [Techno Tim](https://github.com/techno-tim/k3s-ansible/tree/master).
+- [Hari Sekohn Kubernetes-configs](https://github.com/HariSekhon/Kubernetes-configs/tree/master).
+- [Ric Sanfre Pi Kubernetes Cluster Project](https://picluster.ricsanfre.com/).
+- [k3s-ansible](https://github.com/k3s-io/k3s-ansible/).
+- [k3s-ansible Jon Stumpf](https://github.com/jon-stumpf/k3s-ansible).
 - [Christianh814](https://github.com/christianh814/example-kubernetes-go-repo)
 
 There are several other sources. Where possible, I have referenced them directly in the code where I used their solutions or patterns.
