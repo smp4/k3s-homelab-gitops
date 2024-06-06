@@ -1,8 +1,7 @@
-name: ci 
+name: publish docs
 on:
   push:
     branches:
-      - master 
       - main
 permissions:
   contents: write
@@ -25,6 +24,9 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-authors-plugin mkdocs-glightbox 
+      - run: pip install mkdocs-material \
+                mkdocs-git-revision-date-localized-plugin \
+                mkdocs-git-authors-plugin \
+                mkdocs-glightbox 
       - run: mkdocs gh-deploy --force
 

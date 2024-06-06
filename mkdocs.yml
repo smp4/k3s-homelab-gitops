@@ -1,6 +1,6 @@
 site_name: K3S Homelab Gitops Documentation
 repo_url: https://github.com/smp4/k3s-homelab-gitops
-repo_name: K3S Homelab Gitops 
+edit_uri: edit/main/docs/
 site_description: A basic, unavoidably opinionated, non-professional template for bootstrapping a K3S cluster at home. 
 site_author: smp4
 
@@ -10,6 +10,7 @@ theme:
   locale: en
   icon:
     logo: material/test-tube
+    repo: fontawesome/brands/github
   favicon: assets/images/icons/favicon-32x32.png
   features:
     - navigation.instant
