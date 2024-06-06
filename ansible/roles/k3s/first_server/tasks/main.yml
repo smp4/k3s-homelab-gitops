@@ -1,0 +1,104 @@
+---
+# k3s-io/k3s-ansible
+
+- name: Deploy K3s http_proxy conf
+  ansible.builtin.include_tasks: http_proxy.yml
+  when: proxy_env is defined
+
+- name: Init first server node
+  # Handle both hostname OR ip address being supplied in inventory
+  when: ansible_hostname == groups['server'][0] or groups['server'][0] in ansible_facts['all_ipv4_addresses']
+  block:
+    - name: Copy K3s service file [Single]
+      when: groups['server'] | length == 1
+      ansible.builtin.template:
+        src: k3s-single.service.j2
+        dest: "{{ systemd_dir }}/k3s.service"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copy K3s service file [HA]
+      when: groups['server'] | length > 1
+      ansible.builtin.template:
+        src: k3s-cluster-init.service.j2
+        dest: "{{ systemd_dir }}/k3s.service"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Add service environment variables
+      when: extra_service_envs is defined
+      ansible.builtin.lineinfile:
+        path: "{{ systemd_dir }}/k3s.service.env"
+        line: "{{ item }}"
+      with_items: "{{ extra_service_envs }}"
+
+    - name: Enable and check K3s service
+      ansible.builtin.systemd:
+        name: k3s
+        daemon_reload: true
+        state: started
+        enabled: true
+
+    # was ~{{ ansible_user }}/.kube
+    - name: Create directory .kube
+      ansible.builtin.file:
+        path: /home/{{ ansible_user }}/.kube
+        state: directory
+        owner: "{{ ansible_user }}"
+        mode: u=rwx,g=rx,o=
+
+    - name: Copy config file to user home directory (all on remote machine)
+      ansible.builtin.copy:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: /home/{{ ansible_user }}/.kube/config
+        remote_src: true
+        owner: "{{ ansible_user }}"
+        mode: u=rw,g=,o=
+
+    # was ~{{ ansible_user }}/.kube
+    - name: Change server to node IP instead of localhost
+      ansible.builtin.command: >-
+        /usr/local/bin/k3s kubectl config set-cluster default
+         --server=https://{{ k3s_node_ip }}:{{ api_port }}
+         --kubeconfig /home/{{ ansible_user }}/.kube/config
+      changed_when: true
+
+    # was ~{{ ansible_user }}/.kube
+    - name: Copy kubectl config to local machine
+      ansible.builtin.fetch:
+        src: /home/{{ ansible_user }}/.kube/config
+        dest: ~/.kube/config
+        flat: true
+        mode: u=rwx,g=rx,o=
+
+    - name: Wait for control-plane
+      ansible.builtin.wait_for:
+        host: "{{ k3s_node_ip }}"
+        port: "{{ api_port }}"
+        timeout: 60
+
+    # if this step fails with a memcache error, extend the pause 5-10s.
+    - name: Pause to allow server startup
+      ansible.builtin.pause:
+        seconds: 20
+
+    - name: Wait for all kube-system pods to become ready
+      ansible.builtin.shell: kubectl --kubeconfig /home/{{ ansible_user }}/.kube/config wait --namespace=kube-system --for=condition=Ready pod --all --timeout=600s  # noqa: command-instead-of-shell
+      changed_when: true
+
+    - name: Enable and check K3s service
+      ansible.builtin.systemd:
+        name: k3s
+        daemon_reload: true
+        state: restarted
+        enabled: true
+
+    - name: Add K3s autocomplete to user bashrc
+      become: true
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.command:
+        cmd: k3s completion bash -i
+      register: out
+      changed_when: out.rc != 0

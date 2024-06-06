@@ -1,0 +1,32 @@
+---
+# Restrict source for tenant applications and where they can be deployed (namespace and cluster)
+# https://github.com/christianh814/example-kubernetes-go-repo
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: dev1-appproj
+  namespace: argocd  # must be the ns where argocd itself is deployed
+spec:
+  description: Developer-specified tenant applications
+  sourceRepos:
+  - git@github.com:USERNAME/REPONAME  # patched in overlays
+  destinations:
+  - namespace: '!kube-system'
+    server: '*'
+  - namespace: '*'
+    server: '*'
+  - namespace: "!argocd"
+    server: "*"
+  - namespace: "*"
+    server: "https://kubernetes.default.svc"
+  # Allow all namespaced-scoped resources to be created, except for ResourceQuota, LimitRange, NetworkPolicy
+  namespaceResourceBlacklist:
+    - group: ""
+      kind: ResourceQuota
+    - group: ""
+      kind: LimitRange
+    - group: ""
+      kind: NetworkPolicy
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'

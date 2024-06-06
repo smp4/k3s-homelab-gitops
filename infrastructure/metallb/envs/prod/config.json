@@ -1,0 +1,6 @@
+{
+    "app": {
+        "name": "metallb-prod",
+        "namespace": "metallb-system"        
+    }
+}

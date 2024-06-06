@@ -1,0 +1,16 @@
+---
+
+server:
+  hosts:
+    machineA:
+      ansible_connection: local
+      ansible_user: userA
+      ansible_become_pass: ansible_user_sudo_password  # or better, use a Vault secret
+      flannel_iface: eth0
+
+agent:
+  hosts:
+k3s_cluster:
+  children:
+    server:
+    agent:

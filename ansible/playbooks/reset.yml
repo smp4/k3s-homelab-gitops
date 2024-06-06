@@ -1,0 +1,108 @@
+---
+- name: Undo cluster setup
+  hosts: k3s_cluster
+  gather_facts: true
+  become: true
+  no_log: true 
+  tasks:
+    - name: Run K3s Uninstall script [server]
+      when: "'server' in group_names"
+      ansible.builtin.command:
+        cmd: k3s-uninstall.sh
+        removes: /var/lib/rancher/k3s/*
+    - name: Run K3s Uninstall script [agent]
+      when: "'agent' in group_names"
+      ansible.builtin.command:
+        cmd: k3s-agent-uninstall.sh
+        removes: /var/lib/rancher/k3s/*
+    - name: Remove user kubeconfig
+      ansible.builtin.file:
+        path: /home/{{ ansible_user }}/.kube/config
+        state: absent
+
+    # https://kube-vip.io/docs/usage/k3s/
+    - name: Clean IP environment for KubeVIP (1/2)
+      when: "'server' in group_names"
+      ansible.builtin.command:
+        cmd: ip addr flush dev lo
+      changed_when: false
+
+    - name: Clean IP environment for KubeVIP (2/2)
+      when: "'server' in group_names"
+      ansible.builtin.command:
+        cmd: ip addr add 127.0.0.1/8 dev lo
+      changed_when: false
+
+    - name: Delete VIP from interface
+      when: "'server' in group_names"
+      ansible.builtin.command:
+        cmd: ip addr del {{ apiserver_endpoint }}/{{ apiserver_endpoint | ansible.utils.ipsubnet | ansible.utils.ipaddr('prefix') }} dev {{ flannel_iface }}
+      register: addr_del_result
+      changed_when: false
+      failed_when:
+        # still succeed if the ip address is already deleted. Returns -1 if string not found
+        - addr_del_result.stderr.find("Cannot assign requested address") == -1
+        # keep normal checks
+        - addr_del_result.rc != 0
+
+    # Techno Tim
+    - name: Remove K3s http_proxy files
+      ansible.builtin.file:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ systemd_dir }}/k3s.service.d"
+        - "{{ systemd_dir }}/k3s-node.service.d"
+      when: proxy_env is defined
+
+    - name: Reload daemon_reload
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Remove argocd bootstrap directory
+      ansible.builtin.file:
+        path: /tmp/manifests
+        state: absent
+
+    - name: Remove temp directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /tmp/k3s
+        - /tmp/argo
+        - /tmp/ansible
+
+# This is brittle. Assumes longhorn data is at default longhorn data dir
+    - name: Get files in longhorn default data dir
+      ansible.builtin.find:
+        path: /var/lib/longhorn
+        hidden: True
+        recurse: True
+        file_type: file
+      register: longhornfiles
+
+    - name: Get directories in longhorn default data dir
+      ansible.builtin.find:
+        path: /var/lib/longhorn
+        hidden: True
+        recurse: True
+        file_type: directory
+      register: longhorndirectories
+
+    - name: Delete all contents of longhorn default data dir
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: >
+        {{
+          longhornfiles.files
+          + longhorndirectories.files
+        }}
+
+      # this is brittle, assumes a nfs network store as backup target 
+    - name: Delete longhorn backup directory
+      hosts: longhorn_nfs_backup
+      ansible.builtin.file:
+        path: {{ longhorn_nfs_backup_target }}/backupstore
+        state: absent

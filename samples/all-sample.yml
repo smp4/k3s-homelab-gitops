@@ -1,0 +1,133 @@
+---
+### PIN VERSIONS ###
+
+k3s_version: v1.26.9+k3s1
+kube_vip_version: v0.6.3  # Latest stable, as of 11 November 2023.
+metal_lb_speaker_version: v0.13.12  # Latest stable, as of 11 November 2023.
+metal_lb_controller_version: v0.13.12  # Latest stable, as of 11 November 2023.
+
+### OS ###
+
+# Set your timezone
+system_timezone: Europe/Berlin
+
+### NETWORKING ###
+
+# apiserver_endpoint is virtual ip-address which will be configured on each master.
+# It should be the same for all server nodes. This should be the Virtual IP provided by kubevip.
+# This is not the same IP address as the host machine, it should not come from the pool assigned
+# to MetalLB and must not be in the range assigned to DHCP on the local network.
+apiserver_endpoint: 192.168.0.100
+
+# k3s api server endpoint port. K3s defaults to 6443.
+# api_port: 6443
+
+# The IP on which the node is reachable in the cluster.
+# Here, a sensible default is provided per node, you can still override
+# it for each of your hosts, though, in the hosts file.
+k3s_node_ip: '{{ ansible_facts[flannel_iface]["ipv4"]["address"] }}'
+
+# Proxy config. Only enable and configure these if you access the internet through a proxy
+# proxy_env:
+#   HTTP_PROXY: "http://proxy.domain.local:3128"
+#   HTTPS_PROXY: "http://proxy.domain.local:3128"
+#   NO_PROXY: "*.domain.local,127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+
+### K3s DATA DIRECTORIES ###
+
+# systemd_dir: /etc/systemd/system
+# k3s_server_location: /var/lib/rancher/k3s  # K3s default is /var/lib/rancher/k3s.
+
+### K3s CONFIG OPTIONS ###
+
+# k3s_token is required so that masters can talk together securely.
+# This token should be alpha numeric only. Optionally use an ansible vault secret.
+k3s_token: s3kret-t0ken
+
+# Disable the taint manually by setting: k3s_master_taint = false
+# Disabling the taint allows server nodes to host workloads.
+# This is disabled by default, because we want to use all available machines to run workloads.
+# k3s_master_taint: "{{ true if groups['node'] | default([]) | length >= 1 else false }}"
+k3s_master_taint: false
+
+# These arguments are recommended for servers as well as agents:
+extra_args: >-
+  --flannel-iface={{ flannel_iface }}
+  --node-ip={{ k3s_node_ip }}
+
+# Change these to your liking, the only required are: --disable servicelb, --tls-san {{ apiserver_endpoint }}
+extra_server_args: >-
+  {{ extra_args }}
+  {{ '--node-taint node-role.kubernetes.io/master=true:NoSchedule' if k3s_master_taint else '' }}
+  --tls-san {{ apiserver_endpoint }}
+  --disable servicelb
+  --disable traefik
+extra_agent_args: >-
+  {{ extra_args }}
+
+# extra_service_envs: [ 'ENV_VAR1=VALUE1', 'ENV_VAR2=VALUE2' ]
+
+# List of locally available manifests to apply to the cluster, useful for PVCs or Traefik modifications.
+# Manifests should be either full paths or relative to the playbook directory.
+# extra_manifests: [ '/path/to/manifest1.yaml', '/path/to/manifest2.yaml' ]
+
+# Custom Registry. Only enable this if you have set up your own container registry to act as a mirror / pull-through
+# cache (harbor / nexus / docker's official registry / etc).
+# Can be beneficial for larger dev/test environments (for example if you're getting rate limited by docker hub),
+# or air-gapped environments where your nodes don't have internet access after the initial setup
+# (which is still needed for downloading the k3s binary and such).
+# k3s's documentation about private registries here: https://docs.k3s.io/installation/private-registry
+custom_registries: false
+# The registries can be authenticated or anonymous, depending on your registry server configuration.
+# If they allow anonymous access, simply remove the following bit from custom_registries_yaml
+#   configs:
+#     "registry.domain.com":
+#       auth:
+#         username: yourusername
+#         password: yourpassword
+# The following is an example that pulls all images used in this playbook through your private registries.
+# It also allows you to pull your own images from your private registry, without having to use imagePullSecrets
+# in your deployments.
+# If all you need is your own images and you don't care about caching the docker/quay/ghcr.io images,
+# you can just remove those from the mirrors: section.
+custom_registries_yaml: |
+  mirrors:
+    docker.io:
+      endpoint:
+        - "https://registry.domain.com/v2/dockerhub"
+    quay.io:
+      endpoint:
+        - "https://registry.domain.com/v2/quayio"
+    ghcr.io:
+      endpoint:
+        - "https://registry.domain.com/v2/ghcrio"
+#    registry.domain.com:
+#      endpoint:
+#        - "https://registry.domain.com"
+#
+#  configs:
+#    "registry.domain.com":
+#      auth:
+#        username: yourusername
+#        password: yourpassword
+
+### KUBEVIP CONFIG VARS ###
+
+### MetalLB CONFIG VARS ###
+
+# metallb type frr or native
+metal_lb_type: native
+
+# metallb mode layer2 or bgp
+metal_lb_mode: layer2
+
+# bgp options
+# metal_lb_bgp_my_asn: "64513"
+# metal_lb_bgp_peer_asn: "64512"
+# metal_lb_bgp_peer_address: "192.168.30.1"
+
+# metallb ip range for load balancer - pick whatever makes sense on your network
+metal_lb_ip_range: 192.168.0.2-192.168.0.10
+
+# longhorn nfs backup target. Assumed to be on the longhorn_nfs_backup host in hosts.yaml
+longhorn_nfs_backup_target: "/srv/longhorn-backup"

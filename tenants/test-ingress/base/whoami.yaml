@@ -1,0 +1,68 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-ingress
+spec: {}
+status: {}
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: test-ingress
+  labels:
+    app: test-ingress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-ingress
+  template:
+    metadata:
+      labels:
+        app: test-ingress
+    spec:
+      containers:
+      - name: whoami
+        image: traefik/whoami
+        volumeMounts:
+        - name: longhorn-pvc-volume
+          mountPath: /data
+        ports:
+        - containerPort: 80
+      volumes:
+      - name: longhorn-pvc-volume
+        persistentVolumeClaim:
+          claimName: longhorn-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-ingress
+spec:
+  selector:
+    app: test-ingress
+  ports:
+    - protocol: TCP
+      name: http
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: test-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`test.your.domain.com`)
+    kind: Rule
+    services:
+    - name: test-ingress
+      port: 80

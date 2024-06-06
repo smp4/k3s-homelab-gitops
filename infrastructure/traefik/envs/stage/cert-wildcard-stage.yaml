@@ -1,0 +1,19 @@
+# copied and modified 29.12.2023
+# https://github.com/reefland/ansible-k3s-argocd-renovate/blob/3c10b6499d3113d9418a5c4919a1b3d9289ad379/templates/traefik/workloads/traefik-config/traefik_wildcard_cert.yaml.j2#L11
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cluster-home-wildcard-cert-stage
+  namespace: traefik
+spec:
+  # Secret names are always required.
+  secretName: cluster-home-wildcard-cert-stage
+  # At least one of a DNS Name, URI, or IP address is required.
+  dnsNames:
+  - "your.domain.com"  # this domain, to allow paths too
+  - "*.your.domain.com"  # subdomains
+  commonName: "*.your.domain.com"  # copied from techno tim
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-staging

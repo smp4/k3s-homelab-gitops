@@ -1,0 +1,11 @@
+# copied and modified 29.12.2023
+# https://github.com/reefland/ansible-k3s-argocd-renovate/blob/3c10b6499d3113d9418a5c4919a1b3d9289ad379/templates/traefik/workloads/traefik-config/traefik_default_tls_store.yaml.j2#L8
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: traefik
+spec:
+  defaultCertificate:
+    secretName: cluster-home-wildcard-cert-prod

@@ -1,0 +1,19 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: longhorn-ingress-route
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`longhorn.your.domain.com`)
+    kind: Rule
+    services:
+    - name: longhorn-frontend
+      port: 80
+    middlewares:
+      - name: svc-longhorn-headers
+        namespace: longhorn-system

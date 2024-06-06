@@ -1,0 +1,14 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infrastructure-appset
+  namespace: argocd
+spec:
+  template:
+    spec:
+      source:
+        repoURL: git@github.com:USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git
+        targetRevision: main
+# WARNING: MIGHT HAVE ERRORS IF /path IS NOT RETAINED FROM BASE
+      # path: "{{path}}"

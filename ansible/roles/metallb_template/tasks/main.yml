@@ -1,0 +1,23 @@
+---
+# adapted from techno-tim.
+- name: Create metallb templates on Ansible Controller.
+  run_once: true
+  # Handle both hostname OR ip address being supplied in inventory
+  when: ansible_hostname == groups['server'][0] or groups['server'][0] in ansible_facts['all_ipv4_addresses']
+  block:
+    - name: Copy metallb kustomization.yaml template to gitops repo on ansible controller
+      ansible.builtin.template:
+        src: "kustomization.yaml.j2"
+        dest: "{{ lookup('env', 'PWD') }}/infrastructure/metallb/kustomization.yaml"
+        owner: "{{ lookup('env', 'USER') }}"
+        group: "{{ lookup('env', 'USER') }}"
+        mode: 0644
+      delegate_to: localhost
+    - name: Copy metallb custom resource spec template to gitops repo on ansible controller
+      ansible.builtin.template:
+        src: "pool_advertisement.yaml.j2"
+        dest: "{{ lookup('env', 'PWD') }}/infrastructure/metallb/pool_advertisement.yaml"
+        owner: "{{ lookup('env', 'USER') }}"
+        group: "{{ lookup('env', 'USER') }}"
+        mode: 0644
+      delegate_to: localhost

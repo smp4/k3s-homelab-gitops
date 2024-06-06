@@ -1,0 +1,10 @@
+---
+exclude_paths:
+  - ss/
+  - .venv/
+  - .vscode/
+
+warn_list:
+  - var-namingvar-naming[no-role-prefix]
+  - yaml[comments-indentation]
+  - yaml[line-length]

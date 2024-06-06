@@ -1,0 +1,12 @@
+.env/
+.venv/
+.DS_Store/
+.envrc
+.vscode
+*.log
+**/hosts.yml
+**/localhost.yml
+**/all.yml
+*.pass
+*.pem
+site/

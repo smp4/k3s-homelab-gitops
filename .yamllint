@@ -1,0 +1,18 @@
+---
+
+extends: default
+
+rules:
+  document-start: disable
+  indentation:
+    indent-sequences: whatever
+  line-length: disable
+  truthy:
+    ignore: .github/workflows/
+
+ignore:
+  - .venv/
+  - .vscode/
+  - ansible/assets
+  - ha-install.yaml
+  - install-argocd.yaml

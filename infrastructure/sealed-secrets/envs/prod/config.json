@@ -1,0 +1,6 @@
+{
+    "app": {
+        "name": "sealed-secrets-prod",
+        "namespace": "kube-system"
+    }
+}

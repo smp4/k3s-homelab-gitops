@@ -1,0 +1,11 @@
+# https://longhorn.io/kb/troubleshooting-traefik-2.x-as-ingress-controller/
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: svc-longhorn-headers
+  namespace: longhorn-system
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Proto: "https"

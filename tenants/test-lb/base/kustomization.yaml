@@ -1,0 +1,11 @@
+---
+# https://technotim.live/posts/kube-traefik-cert-manager-le/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: test-lb
+
+resources:
+- deployment.yaml
+- service.yaml
+- ns-test-lb.yaml

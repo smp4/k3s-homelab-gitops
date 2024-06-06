@@ -1,0 +1,8 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: dev1-appproj
+  namespace: argocd
+spec:
+  sourceRepos:
+    - file:///tmp/argo-gitops.git

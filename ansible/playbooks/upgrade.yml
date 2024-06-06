@@ -1,0 +1,19 @@
+---
+# Servers should be restarted sequentially to avoid etcd leader issues
+# Agents have no such limitation
+- name: Upgrade K3s Servers
+  hosts: server
+  gather_facts: true
+  become: true
+  no_log: true
+  serial: 1
+  roles:
+    - role: upgrade
+
+- name: Upgrade K3s Agents
+  hosts: agent
+  gather_facts: true
+  become: true
+  no_log: true
+  roles:
+    - role: upgrade

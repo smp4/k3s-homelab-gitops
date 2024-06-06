@@ -1,0 +1,19 @@
+---
+defaultSettings:
+  defaultReplicaCount: 3  # default 3, set to the number of nodes you have. only applies to volumes created in UI
+#  guaranteedEngineCPU: 0.25  # default 0.25
+  storageOverProvisioningPercentage: 200  # default 200
+  storageMinimalAvailablePercentage: 10  # default 25. Use 10 since dedicated storage media
+  allowVolumeCreationWithDegradedAvailability: false  # error out vol creation if there is only room for 1 replica
+  replicaSoftAntiAffinity: disabled # false per best longhorn practices
+  allowCollectingLonghornUsageMetrics: false
+  
+persistence:
+  defaultClass: true # default true. Set as default storage class in the cluster
+  # reclaimPolicy: Retain  # default Delete. Retain will keep volumes when their host workloads are deleted.
+
+# See https://github.com/longhorn/longhorn/issues/6415
+# Necessary for installation with ArgoCD
+# Note that this name might change, poorly documented in docs
+preUpgradeChecker:
+  jobEnabled: false

@@ -1,0 +1,27 @@
+---
+
+server:
+  hosts:
+    machineA:
+      ansible_connection: ssh
+      ansible_user: userA
+      ansible_become_pass: secretpassword  # or use Vault
+      ansible_port: 22
+      ansible_ssh_private_key_file: /home/userA/.ssh/ssh-public-key
+      flannel_iface: eth0
+
+agent:
+  hosts:
+    machineB:
+      ansible_connection: local
+      ansible_user: userB
+      ansible_become_pass: secretpassword  # or use Vault
+      flannel_iface: eth0
+
+longhorn_backup:
+  machineA
+
+k3s_cluster:
+  children:
+    server:
+    agent:

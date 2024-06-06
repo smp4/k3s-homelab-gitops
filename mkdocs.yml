@@ -1,0 +1,112 @@
+site_name: K3S Homelab Gitops Documentation
+repo_url: https://github.com/smp4/k3s-homelab-gitops
+repo_name: K3S Homelab Gitops 
+site_description: A basic, unavoidably opinionated, non-professional template for bootstrapping a K3S cluster at home. 
+site_author: smp4
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  locale: en
+  icon:
+    logo: material/test-tube
+  favicon: assets/images/icons/favicon-32x32.png
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.path
+    - navigation.tabs
+    - navigation.tabs.sticky
+      # - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.action.edit
+    - content.action.view
+
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+plugins:
+  - search
+  - glightbox  # image zoom
+  - blog:
+      enabled: true
+      post_readtime: true
+  - git-revision-date-localized:
+      type: datetime  
+      timezone: Europe/Berlin
+      enable_creation_date: true
+      exclude:
+        - index.md
+  - git-authors:
+      show_contribution: true
+      sort_authors_by: name
+      authorship_threshold_percent: 10
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - md_in_html
+  - def_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.keys
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tilde  # tilde delete
+  - pymdownx.snippets
+
+exclude_docs: |
+  /assets/images/icons/README.md
+
+nav:
+  - Home: index.md
+  - Getting Started: 
+    - getting-started/index.md
+    - getting-started/installation.md
+    - Repository Contents: getting-started/repo-contents.md
+  - Tutorials:
+    - tutorials/index.md
+    - tutorials/tutorial01.md
+    - tutorials/tutorial02.md
+    - tutorials/tutorial03.md
+    - tutorials/tutorial04.md
+    - tutorials/tutorial05.md
+  - How To's:
+    - howtos/index.md
+    - howtos/kubectl.md
+    - howtos/helm-kustomize.md
+    - howtos/add-new-node.md
+    - howtos/dynamic-environments.md
+    - howtos/patching-argocd-cd.md
+  - Explanations:
+    - explanations/index.md
+    - Cluster organisation: explanations/cluster-organisation.md
+    - Naming conventions: explanations/naming.md
+  - Reference:
+    - reference/index.md
+  - Development: development.md
+  - About:
+    - about/index.md
+    - about/CHANGELOG.md
+  #- Blog: blog/index.md
+ 

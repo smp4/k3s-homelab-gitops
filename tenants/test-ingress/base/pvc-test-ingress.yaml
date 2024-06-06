@@ -1,0 +1,14 @@
+# https://picluster.ricsanfre.com/docs/longhorn/#testing-longhorn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: longhorn-pvc
+  namespace: test-ingress
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: longhorn-tworep
+  resources:
+    requests:
+      storage: 1Gi

@@ -1,0 +1,21 @@
+---
+- name: Reboot cluster servers staggered
+  hosts: controllers
+  become: true
+  no_log: true
+  gather_facts: true
+  serial: 1
+  tasks:
+    - name: Reboot
+      ansible.builtin.reboot:
+        test_command: kubectl get nodes
+
+- name: Reboot cluster agents staggered
+  hosts: nodes
+  become: true
+  no_log: true
+  gather_facts: true
+  serial: 1
+  tasks:
+    - name: Reboot
+      ansible.builtin.reboot:

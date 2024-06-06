@@ -1,0 +1,22 @@
+---
+# https://github.com/HariSekhon/Kubernetes-configs/blob/master/cert-manager/base/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# namespace: cert-manager  # XXX: Do not set this - it will override roles for kube-system needed for leader election of cainjector
+
+resources:
+  - issuer-selfsigned.yaml
+  - issuer-letsencrypt-stage.yaml
+  - issuer-letsencrypt-prod.yaml
+  - ns-cert-manager.yaml
+#  - secret-cf-token-sealed.yaml
+
+helmCharts:
+- name: cert-manager
+  repo: https://charts.jetstack.io
+  version: 1.14.5
+  releaseName: cert-manager
+  namespace: cert-manager
+  includeCRDs: true
+  valuesFile: values-cert-manager.yaml

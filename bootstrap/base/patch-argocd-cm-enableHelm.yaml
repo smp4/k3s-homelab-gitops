@@ -1,0 +1,13 @@
+# Allow ArgoCD's Kustomize executable to inflate Helm charts.
+# Required if using `HelmCharts:` object in kustomization.yaml's.
+# https://argo-cd.readthedocs.io/en/stable/user-guide/kustomize/#kustomizing-helm-charts
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  kustomize.buildOptions: --enable-helm

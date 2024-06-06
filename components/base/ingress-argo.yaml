@@ -1,0 +1,26 @@
+---
+# Distinguish gRPC requests from HTTP with content-type.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd-server
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host('argocd.your.domain.com')
+    priority: 10
+    services:
+    - name: argocd-server
+      port: 80
+  - kind: Rule
+    # Traefik v3: Content-Type may cause issues - may need ContentType middleware.
+    match: Host(`argocd.your.domain.com`) && Header(`Content-Type`, `application/grpc`)
+    priority: 11
+    services:
+    - name: argocd-server
+      port: 80
+      scheme: h2c

@@ -1,0 +1,41 @@
+---
+# https://github.com/christianh814/example-kubernetes-go-repo
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infrastructure-appset
+  namespace: argocd
+spec:
+  generators:
+    - git:  # patched in overlays
+        repoURL: git@github.com:USERNAME/REPONAME
+        revision: HEAD
+        files:
+          - path: "infrastructure/**/config.json"
+  template:
+    metadata:
+      name: "{{app.name}}"
+      namespace: "{{app.namespace}}"
+      labels:
+        usage: infrastructure
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      ignoreDifferences:
+      - group: "apiextensions.k8s.io"
+        kind: CustomResourceDefinition
+        jsonPointers:
+        - /spec/conversion/webhook/clientConfig/caBundle
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - RespectIgnoreDifferences=true
+      source:
+        repoURL: file:///tmp/argo-gitops.git  # patched in overlays
+        targetRevision: HEAD  # patched in overlays
+        path: "{{path}}"
+      destination:
+        server: https://kubernetes.default.svc

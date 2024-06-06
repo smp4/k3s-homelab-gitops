@@ -1,0 +1,28 @@
+---
+# adapted from k3s-io/k3s-ansible
+- name: Copy k3s install script to remote machine
+  ansible.builtin.copy:
+    src: k3s-install.sh
+    dest: /usr/local/bin/k3s-install.sh
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Download k3s binary [server]
+  when: "'server' in group_names"
+  ansible.builtin.command:
+    cmd: /usr/local/bin/k3s-install.sh
+  environment:
+    INSTALL_K3S_SKIP_START: "true"
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+  changed_when: true
+
+- name: Download k3s binary [agent]
+  when: "'agent' in group_names"
+  ansible.builtin.command:
+    cmd: /usr/local/bin/k3s-install.sh
+  environment:
+    INSTALL_K3S_SKIP_START: "true"
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+    INSTALL_K3S_EXEC: agent
+  changed_when: true

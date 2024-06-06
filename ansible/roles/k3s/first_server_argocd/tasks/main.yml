@@ -1,0 +1,88 @@
+---
+# k3s-io/k3s-ansible, with jon-stumpf wait and adapted from
+# recsanfre/pi-cluster/ansible/k3s_bootstrap.yml
+#
+# Runs only on master server node to bootstrap argocd.
+# Creates a venv on the server node host to execute k8s internal tasks.
+
+- name: Create python venv for ansible on first server node
+  # Handle both hostname OR ip address being supplied in inventory
+  when: ansible_hostname == groups['server'][0] or groups['server'][0] in ansible_facts['all_ipv4_addresses']
+  block:
+    - name: Install required Python system packages
+      ansible.builtin.package:
+        name:
+          - python3-venv
+        state: present
+
+    # create temporary venv directory
+    - name: Create temporary python venv directory
+      ansible.builtin.file:
+        path: /tmp/ansible/
+        state: directory
+        owner: "{{ ansible_user }}"
+        mode: u=rwx,g=rx,o=
+
+    - name: Create python venv and install kubernetes Python library in it
+      ansible.builtin.pip:
+        name:
+          - kubernetes
+        state: present
+        virtualenv: /tmp/ansible/.venv
+        virtualenv_command: /usr/bin/python3 -m venv
+
+- name: Bootstrap ArgoCD on first server node
+  # Handle both hostname OR ip address being supplied in inventory
+  when: ansible_hostname == groups['server'][0] or groups['server'][0] in ansible_facts['all_ipv4_addresses']
+  vars:
+    ansible_python_interpreter: /tmp/ansible/.venv/bin/python3
+  block:
+    - name: Create temporary argocd manifest directory on remote machine
+      ansible.builtin.file:
+        path: /tmp/argo/
+        state: directory
+        owner: "{{ ansible_user }}"
+        mode: u=rwx,g=rx,o=
+
+    - name: Copy manifest files
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: /tmp/argo/
+        owner: "{{ ansible_user }}"
+        mode: u=rwx,g=rx,o=
+      loop:
+        - ./../../../../bootstrap
+        - ./../../../../components
+        - ./../../../../infrastructure
+        - ./../../../../tenants
+
+    # might fail if manifests are applied too quickly before argo CRDs are available in cluster, so retry.
+    # If this fails, it is very likely because of an error in the k8s config yaml, not ansible. Check your yaml builds with k kustomize build....
+    # Argo must be bootstrapped into dev with a local git repo to pull from, prior to upgrading to prod, which requires secrets, which requires the cluster to be up.
+    - name: Apply manifests
+      ansible.builtin.command:
+        cmd: kubectl --kubeconfig /home/{{ ansible_user }}/.kube/config apply -k '/tmp/argo/bootstrap/envs/dev/'
+      retries: 5
+      delay: 30
+      register: result
+      until: result.rc == 0
+      changed_when: false  # was true
+
+    - name: Wait for all pods to be ready
+      ansible.builtin.shell: kubectl wait --kubeconfig /home/{{ ansible_user }}/.kube/config -A --for=condition=Ready pod --all --timeout=600s # noqa: command-instead-of-shell
+      changed_when: false      
+
+    - name: Change server to API endpoint instead of localhost
+      ansible.builtin.command: >-
+        /usr/local/bin/k3s kubectl config set-cluster default
+         --server=https://{{ apiserver_endpoint }}:{{ api_port }}
+         --kubeconfig ~{{ ansible_user }}/.kube/config
+      changed_when: true
+
+    # this should overwrite .kube/config file copied to local machine in first_server/tasks/main.yml
+    - name: Copy kubectl config to local machine
+      ansible.builtin.fetch:
+        src: /home/{{ ansible_user }}/.kube/config
+        dest: ~/.kube/config
+        flat: true
+        mode: u=rwx,g=rx,o=

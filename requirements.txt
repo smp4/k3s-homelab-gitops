@@ -1,0 +1,10 @@
+ansible
+ansible-lint
+mkdocs-material
+mkdocs-git-revision-date-localized-plugin
+mkdocs-git-authors-plugin
+mkdocs-glightbox
+netaddr
+pre-commit
+scriv
+yamllint

@@ -1,0 +1,20 @@
+# traefik dashboard
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: traefik
+  annotations:
+    kubernetes.io/ingress.class: traefik-external  # per ingress class name in values-traefik.yaml
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`traefik.your.domain.com`)  # create DNS entry from here to LB IP specified in values-traefik.yaml
+      kind: Rule
+      middlewares:
+        - name: traefik-dashboard-basicauth
+          namespace: traefik
+      services:
+        - name: api@internal
+          kind: TraefikService

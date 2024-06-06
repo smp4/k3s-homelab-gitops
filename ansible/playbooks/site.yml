@@ -1,0 +1,55 @@
+---
+# k3s-io/k3s-ansible, modified with jon-stumpf/k3s-ansible cluster-config
+- name: Cluster prep
+  hosts: k3s_cluster
+  gather_facts: true
+  environment: "{{ proxy_env | default({}) }}"
+  become: true
+  no_log: true
+  roles:
+    - role: prereq
+    - role: download
+    - role: k3s/custom_registries  # noqa: role-name[path]
+      when: custom_registries
+
+- name: Setup first K3S server
+  hosts: server
+  environment: "{{ proxy_env | default({}) }}"
+  become: true
+  no_log: true
+  roles:
+    - role: k3s/first_server  # noqa: role-name[path]
+
+- name: Bootstrap ArgoCD on first server
+  hosts: server
+  environment: "{{ proxy_env | default({}) }}"
+  become: true
+  no_log: true
+  roles:
+    - role: k3s/first_server_argocd  # noqa: role-name[path]
+      tags: [deploy]
+
+- name: Setup remaining K3S servers
+  hosts: server
+  environment: "{{ proxy_env | default({}) }}"
+  become: true
+  no_log: true
+  roles:
+    - role: k3s/other_server  # noqa: role-name[path]
+
+- name: Configure k3s cluster and wait for control-plane before setting up agents
+  hosts: server
+  environment: "{{ proxy_env | default({}) }}"
+  become: true
+  no_log: true
+  roles:
+    - role: k3s/server_post  # noqa: role-name[path]
+
+- name: Setup K3S agent
+  hosts: agent
+  environment: "{{ proxy_env | default({}) }}"
+  become: true
+  no_log: true
+  roles:
+    - role: k3s/agent  # noqa: role-name[path]
+      tags: [agent]

@@ -1,0 +1,39 @@
+---
+# see https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/Use-Cases/#use-case-self-service-of-argo-cd-applications-on-multitenant-clusters
+# for an example how to restrict what can be set in the apps directory
+# https://github.com/christianh814/example-kubernetes-go-repo
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: tenants-appset
+  namespace: argocd
+spec:
+  generators:
+    - git:  # patched in overlays
+        repoURL: file:///tmp/argo-gitops.git
+        revision: main
+        files:
+          - path: "tenants/*/envs/*/config.json"
+  template:
+    metadata:
+      name: "{{app.name}}"
+      namespace: "{{ app.namespace }}"  # namespace is restricted. may need to remove this if anything wants deployment to default ns.
+      labels:
+        usage: tenant
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: dev1-appproj
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - RespectIgnoreDifferences=true
+      source:
+        repoURL: file:///tmp/argo-gitops.git  # patched in overlays
+        targetRevision: main  # patched in overlays
+        path: "{{path}}"
+      destination:
+        server: https://kubernetes.default.svc  # destination server is restricted

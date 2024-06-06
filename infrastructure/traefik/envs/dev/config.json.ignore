@@ -1,0 +1,6 @@
+{
+    "app": {
+        "name": "traefik-dev",
+        "namespace": "traefik"
+    }
+}

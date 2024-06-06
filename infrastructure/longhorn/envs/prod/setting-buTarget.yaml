@@ -1,0 +1,8 @@
+# https://github.com/longhorn/longhorn/discussions/5766
+---
+apiVersion: longhorn.io/v1beta2
+kind: Setting
+metadata:
+  name: backup-target
+  namespace: longhorn-system
+value: nfs://192.168.0.1:/your/nfs/longhorn/backup/target

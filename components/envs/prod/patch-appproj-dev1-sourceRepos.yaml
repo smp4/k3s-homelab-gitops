@@ -1,0 +1,8 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: dev1-appproj
+  namespace: argocd
+spec:
+  sourceRepos:
+    - git@github.com:USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git

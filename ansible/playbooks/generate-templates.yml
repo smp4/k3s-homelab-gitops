@@ -1,0 +1,8 @@
+---
+- name: Create kubernetes yaml from templates
+  hosts: server
+  gather_facts: true
+  no_log: true
+  roles:
+    - role: vip_template
+    - role: metallb_template

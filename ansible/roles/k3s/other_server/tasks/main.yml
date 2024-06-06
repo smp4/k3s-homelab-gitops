@@ -1,0 +1,43 @@
+---
+# k3s-io/k3s-ansible
+
+- name: Start other server(s) if any and verify status
+  when:
+    - (groups['server'] | length) > 1
+    - ansible_hostname != groups['server'][0]
+  block:
+    - name: Copy K3s service file [HA]
+      when: groups['server'] | length > 1
+      ansible.builtin.template:
+        src: k3s-ha.service.j2
+        dest: "{{ systemd_dir }}/k3s.service"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Enable and check K3s service
+      ansible.builtin.systemd:
+        name: k3s
+        daemon_reload: true
+        state: started
+        enabled: true
+
+    - name: Verify that all server nodes joined
+      when: (groups['server'] | length) > 1
+      ansible.builtin.command:
+        cmd: >
+          k3s kubectl get nodes -l "node-role.kubernetes.io/control-plane=true" -o=jsonpath="{.items[*].metadata.name}"
+      register: nodes
+      until: nodes.rc == 0 and (nodes.stdout.split() | length) == (groups['server'] | length)
+      retries: 20
+      delay: 10
+      changed_when: false
+
+- name: Create symlinks
+  ansible.builtin.file:
+    src: /usr/local/bin/k3s
+    dest: /usr/local/bin/{{ item }}
+    state: link
+  with_items:
+    - kubectl
+    - crictl

@@ -1,0 +1,22 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: traefik
+
+resources:
+# see requirements https://doc.traefik.io/traefik/v3.0/providers/kubernetes-crd/#requirements
+- ns-traefik.yaml
+- mware-default-headers.yaml
+- mware-dashboard-basicauth.yaml
+- ingress-dashboard.yaml
+#- secret-dashboard-sealed.yaml
+
+helmCharts:
+- name: traefik
+  repo: https://traefik.github.io/charts
+  version: 28.0.0
+  releaseName: traefik
+  namespace: traefik
+  includeCRDs: true
+  valuesFile: values-traefik.yaml

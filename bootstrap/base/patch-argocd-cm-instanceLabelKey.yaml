@@ -1,0 +1,20 @@
+# sharedResourceWarning for eg longhorn, cert-manager is caused by ArgoCD and other tools (helm, kustomize)
+# both using app.kubernetes.io/instance label to manage resources.
+# Tell ArgoCD to use a different label for this, to avoid conflicts.
+# https://argo-cd.readthedocs.io/en/latest/user-guide/resource_tracking/
+# https://argo-cd.readthedocs.io/en/stable/faq/#why-is-my-app-out-of-sync-even-after-syncing
+# https://argo-cd.readthedocs.io/en/stable/user-guide/annotations-and-labels/
+# 
+# Alternative solution is to remove the label on individual deployments. See:
+# https://github.com/argoproj/argo-cd/issues/2600
+# https://github.com/argoproj/argo-cd/issues/6728
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  application.instanceLabelKey: argocd.argoproj.io/instance

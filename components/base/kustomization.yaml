@@ -1,0 +1,10 @@
+---
+# https://github.com/christianh814/example-kubernetes-go-repo/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - appproj-dev1.yaml
+  - appset-infrastructure.yaml
+  - appset-tenants.yaml
+  - ingress-argo.yaml
