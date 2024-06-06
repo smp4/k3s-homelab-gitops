@@ -48,7 +48,7 @@ ssh-keygen -t ed25519 -C "your_email@example.com"  # your github account email
 # Leave the passphrase empty
 ```
 
-We won't be using this private key on a local machine and it isn't protected with a passphrase, so we do not need to add it to any keychain or `ssh-agent`.
+We won't be using this private key on a local machine and it isn't protected with a passphrase, so we do not need to add it to any key chain or `ssh-agent`.
 
 
 ### Create local plain text secrets

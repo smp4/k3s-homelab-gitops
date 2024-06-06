@@ -71,7 +71,7 @@ This is more of a wishlist than a roadmap.
 - Implement [graceful node shutdown](https://github.com/k3s-io/k3s/discussions/4319).
 - ArgoCD slack notifications.
 - Renovate update PRs ([inspiration](https://github.com/reefland/ansible-k3s-argocd-renovate)).
-- Define tenant application versions in a `version.yml` file with a container tag per environment in `tenants/myapp/envs/`.
+- Define tenant application versions in a `version.yml` file with a container tag per environment in `tenants/#/envs/`.
 - Sealed Secrets [best practices](https://kubernetes.io/docs/concepts/configuration/secret/) (encryption at rest, RBAC).
 - Basic auth on longhorn dashboard
 
