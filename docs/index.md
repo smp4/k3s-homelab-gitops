@@ -6,6 +6,6 @@ This repo is a basic, unavoidably opinionated, non-professional template for boo
 
 This is the public version of the GitOps infrastructure repository for my home cluster. It is intended to be used as a template for a new cluster, and then to be forked and modified to suit your needs. 
 
-:warning: **Use at your own risk! I am not a Kubernetes professional. This template attempts, but does not guarantee, to follow configuration and security best practices. I am not responsible for any damages or data loss.** :warning:
+:warning: **Use at your own risk! This template attempts, but does not guarantee, to follow configuration and security best practices. It was not created by a kubernetes professional. I am not responsible for any damages or data loss incurred by your usage of this template.** :warning:
 
 Head over to [Getting Started](getting-started/index.md).
