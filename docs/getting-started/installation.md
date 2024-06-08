@@ -37,7 +37,7 @@ For this cluster to work, make sure the following ports are open. For more infor
 |  |  | 10.42.0.0/16 | any | K3s pods |
 |  |  | 10.43.0.0/16 | any | K3s services |
 
-Note also that if you are using an NFS network store as backup target, All nodes will need to have access to that target, as will the K3s pods (`10.42.0.0/16`).
+Note also that if you are using an NFS network store as backup target, all nodes will need to have access to that target, as will the K3s pods (`10.42.0.0/16`).
 
 Example NFS setup:
 
