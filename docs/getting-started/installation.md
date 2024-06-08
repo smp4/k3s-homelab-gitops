@@ -81,7 +81,7 @@ First, create your own private repo somewhere (eg. GitHub), eg `k3s-homelab-gito
 ```bash
 git clone --bare git@github.com:smp4/k3s-homelab-gitops.git
 cd k3s-homelab-gitops
-git push --mirror git@github.com:smp4/k3s-homelab-gitops-private.git 
+git push --mirror git@github.com:YOURUSERNAME/k3s-homelab-gitops-private.git 
 cd ..
 rm -rf k3s-homelab-gitops
 ```
@@ -89,7 +89,7 @@ rm -rf k3s-homelab-gitops
 Clone the private repo to the local file system on the Ansible controller workstation.
 
 ```bash
-git clone git@github.com:smp4/k3s-homelab-gitops-private.git
+git clone git@github.com:YOURUSERNAME/k3s-homelab-gitops-private.git
 # do work, add, commit
 git push origin main
 ```
