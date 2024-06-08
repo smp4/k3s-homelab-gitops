@@ -1,19 +1,29 @@
 name: Pre-commit auto-update
+
 on:
   # every day at midnight
   schedule:
     - cron: "0 0 * * *"
-  # on demand
+  # on demand  
   workflow_dispatch:
+
 jobs:
-  upgrade:
-    uses: browniebroke/github-actions/.github/workflows/pre-commit-autoupdate.yml@v1
-    secrets:
-      gh_pat: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
-    with:
-      # Inputs listed with their default (all optional)
-      config_path: ".pre-commit-config.yaml" # path is relative to repository root
-      python_version: "3.11"
-      branch_name: "update/pre-commit-hooks"
-      pull_request_title: "chore(deps): upgrade dependencies"
-      commit_message: "chore(deps): upgrade dependencies"
+  auto-update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - uses: browniebroke/pre-commit-autoupdate-action@main
+      
+      - uses: peter-evans/create-pull-request@v6
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update/pre-commit-hooks
+          title: Update pre-commit hooks
+          commit-message: "chore(deps): update pre-commit hooks"
+          body: Update versions of pre-commit hooks to latest version.

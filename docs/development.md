@@ -66,3 +66,5 @@ Two actions are pre-configured:
 
 - Auto-update pre-commit hook versions
 - Build the docs and publish to GitHub Pages 
+
+For the pre-commit action to work, you must give GitHub Actions permission to create pull requests to your repo. You can find this setting in your repository settings under Actions - General - Workflow permissions.
