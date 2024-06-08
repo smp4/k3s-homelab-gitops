@@ -76,35 +76,36 @@ Install ArgoCD CLI following the [docs](https://argo-cd.readthedocs.io/en/stable
 
 This is a public repo. Ultimately, you will want to be using this as a private repo, but perhaps you will want to keep it connected to this public instance to be able to pull upstream changes. To achieve this, mirror this public repo into your own private repo.  
 
-First, create your own private repo somewhere (eg. GitHub), eg `k3s-homelab-gitops-private`. The following commands assume you have an ssh connection to GitHub.
+First, get a copy of this repo. The following assumes you want to take this template as a starting point to create a new repo (eg. your private GitOps repo), then make your own modifications, while still retaining the ability to pull updates from the template. [Reference SO](https://stackoverflow.com/a/10966784).
+
+Create the private repo in gitlab. In whichever directory you store your projects:
 
 ```bash
-git clone --bare git@github.com:smp4/k3s-homelab-gitops.git
-cd k3s-homelab-gitops
-git push --mirror git@github.com:YOURUSERNAME/k3s-homelab-gitops-private.git 
-cd ..
-rm -rf k3s-homelab-gitops
-```
+# clone the template to your private repo
+git clone git@github.com:smp4/k3s-homelab-gitops.git k3s-homelab-gitops-private
+cd k3s-homelab-gitops-private
 
-Clone the private repo to the local file system on the Ansible controller workstation.
+# set the remote origin to your private repo on GitHub
+git remote set-url origin git@github.com:YOURUSERNAME/k3s-homelab-gitops-private.git
 
-```bash
-git clone git@github.com:YOURUSERNAME/k3s-homelab-gitops-private.git
-# do work, add, commit
+# add the public template repo on GitHub as an upstream source
+git remote add upstream git@github.com:smp4/k3s-homelab-gitops.git
+git remote -v show  # verify
+
+# push new repo to GitHub
+git push -u origin main
+
+# do work, commit, push to private repo
 git push origin main
+
+# pull updates from the public template
+git fetch upstream
+git merge upstream/main
 ```
 
-Now you can work on the repo privately.
+!!! note
+    This is not a fork. Create a fork if you want to contribute back to the public template.
 
-To pull upstream changes from this public repo:
-
-```bash
-git remote add public-repo git@github.com:smp4/k3s-homelab-gitops.git
-git pull public-repo main
-git push origin main
-```
-
-This will create a remote server listing for the public repo in your git settings called `public-repo`. The `pull` command will create a merge commit. 
 
 ## Install Ansible
 
