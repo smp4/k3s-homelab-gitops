@@ -35,7 +35,7 @@ For this cluster to work, make sure the following ports are open. For more infor
 | TCP & UDP | 7946 | All nodes and clients | Servers | MetalLB L2 mode traffic |
 | TCP | 7472 | All nodes | All nodes | MetalLB metrics between nodes |
 |  |  | 10.42.0.0/16 | any | K3s pods |
-|  |  | 10.53.0.0/16 | any | K3s services |
+|  |  | 10.43.0.0/16 | any | K3s services |
 
 Note also that if you are using an NFS network store as backup target, All nodes will need to have access to that target, as will the K3s pods (`10.42.0.0/16`).
 
@@ -44,7 +44,7 @@ Example NFS setup:
 | Protocol | Port | Source | Destination | Description |
 | - | - | - | - | - |
 |  | 2049 | 10.42.0.0/16 | NFS target host | K3s pods to NFS |
-|  | 111 | 10.42.0.0/16 | NFS target host | K3s pods to NFS |
+|  | 111 | 10.43.0.0/16 | NFS target host | K3s pods to NFS |
 |  | 2049 | Servers | NFS target host | K3s server nodes running Longhorn to NFS |
 
 
