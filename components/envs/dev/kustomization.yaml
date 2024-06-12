@@ -11,3 +11,4 @@ patches:
   - path: patch-appset-infrastructure-source.yaml
   - path: patch-appset-tenants-generators.yaml
   - path: patch-appset-tenants-source.yaml
+  - path: patch-argocd-repo-server-local-git.yaml
