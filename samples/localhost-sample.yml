@@ -2,7 +2,7 @@
 
 server:
   hosts:
-    machineA:
+    localhost:
       ansible_connection: local
       ansible_user: userA
       ansible_become_pass: ansible_user_sudo_password  # or better, use a Vault secret

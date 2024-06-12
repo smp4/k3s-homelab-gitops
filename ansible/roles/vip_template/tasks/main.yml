@@ -2,24 +2,23 @@
 # adapted from techno-tim.
 - name: Create KubeVIP templates on Ansible Controller.
   run_once: true
-  # Handle both hostname OR ip address being supplied in inventory
-  when: ansible_hostname == groups['server'][0] or groups['server'][0] in ansible_facts['all_ipv4_addresses']
   block:
     # https://stackoverflow.com/a/26399105
     # https://devops.stackexchange.com/a/3772
     - name: Download vip rbac manifest to gitops repo on ansible controller
       ansible.builtin.get_url:
-        url: "https://raw.githubusercontent.com/kube-vip/kube-vip/{{ kube_vip_version }}/docs/manifests/rbac.yaml"
-        dest: "{{ lookup('env', 'PWD') }}/infrastructure/kubevip/rbac-vip.yaml"
-        owner: "{{ lookup('env', 'USER') }}"
-        group: "{{ lookup('env', 'USER') }}"
+        #url: "https://raw.githubusercontent.com/kube-vip/kube-vip/{{ kube_vip_version }}/docs/manifests/rbac.yaml"
+        url: "https://kube-vip.io/manifests/rbac.yaml"
+        dest: "{{ lookup('env', 'PWD') }}/infrastructure/kubevip/base/rbac-vip.yaml"
+        #owner: "{{ lookup('env', 'USER') }}"
+        #group: "{{ lookup('env', 'USER') }}"
         mode: 0644
       delegate_to: localhost
     - name: Copy VIP manifest template to gitops repo on ansible controller
       ansible.builtin.template:
         src: "vip-ds.yaml.j2"
-        dest: "{{ lookup('env', 'PWD') }}/infrastructure/kubevip/ds-vip.yaml"
-        owner: "{{ lookup('env', 'USER') }}"
-        group: "{{ lookup('env', 'USER') }}"
+        dest: "{{ lookup('env', 'PWD') }}/infrastructure/kubevip/base/ds-vip.yaml"
+        #owner: "{{ lookup('env', 'USER') }}"
+        #group: "{{ lookup('env', 'USER') }}"
         mode: 0644
       delegate_to: localhost

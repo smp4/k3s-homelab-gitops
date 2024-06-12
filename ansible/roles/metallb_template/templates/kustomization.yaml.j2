@@ -5,4 +5,5 @@ kind: Kustomization
 namespace: metallb-system
 
 resources:
-  - github.com/metallb/metallb/config/native?ref={{ metal_lb_version }}
+  - https://raw.githubusercontent.com/metallb/metallb/{{ metal_lb_version }}/config/manifests/metallb-native.yaml
+  - pool_advertisement.yaml

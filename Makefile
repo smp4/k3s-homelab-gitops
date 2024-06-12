@@ -5,7 +5,7 @@ lint:
 	ansible-lint
 
 manifest-templates:
-	ansible-playbook -i ./ansible/inventory/hosts.yml --vault-id home@vault_pass ./ansible/playbooks/generate-templates.yml
+	ansible-playbook -i ./ansible/inventory/localhost.yml --vault-id home@vault_pass ./ansible/playbooks/generate-templates.yml
 
 site-up: site-reset
 #	ansible-playbook -i ./ansible/inventory/hosts.yml --vault-id home@prompt ./ansible/playbooks/site.yml

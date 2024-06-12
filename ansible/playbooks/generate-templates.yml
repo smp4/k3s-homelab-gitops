@@ -1,6 +1,6 @@
 ---
 - name: Create kubernetes yaml from templates
-  hosts: server
+  hosts: localhost
   gather_facts: true
   no_log: true
   roles:
