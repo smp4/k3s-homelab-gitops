@@ -18,8 +18,9 @@ agent:
       ansible_become_pass: secretpassword  # or use Vault
       flannel_iface: eth0
 
-longhorn_backup:
-  machineA
+longhorn_nfs_backup:
+  hosts:
+    machineA
 
 k3s_cluster:
   children:

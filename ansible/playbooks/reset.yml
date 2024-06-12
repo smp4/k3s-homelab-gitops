@@ -100,9 +100,14 @@
           + longhorndirectories.files
         }}
 
-      # this is brittle, assumes a nfs network store as backup target 
+- name: Delete longhorn backup directory
+  hosts: longhorn_nfs_backup
+  gather_facts: true
+  become: true
+  no_log: true 
+  tasks:
+      # this is brittle, assumes a directory for longhorn backups. 
     - name: Delete longhorn backup directory
-      hosts: longhorn_nfs_backup
       ansible.builtin.file:
-        path: {{ longhorn_nfs_backup_target }}/backupstore
+        path: "{{ longhorn_nfs_backup_target }}/backupstore"
         state: absent
