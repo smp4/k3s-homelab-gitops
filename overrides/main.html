@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block site_nav %}
+{{ super() }}
+{% if page and page.file and page.file.src_path == "index.md" %}
+    <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="navigation">
+    <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+        <nav class="md-nav md-nav--secondary md-nav--integrated" aria-label="Recently updated" data-md-level="0">
+            <div class="md-nav__title">Recently updated</div>
+            <ul class="md-nav__list" data-md-scrollfix>
+            {% for file in (
+                pages
+                | selectattr("page.meta.git_revision_date_localized_raw_iso_datetime")
+                | selectattr("page.meta.git_creation_date_localized_raw_iso_datetime")
+                | sort(attribute="page.title")
+                | sort(attribute="page.meta.git_creation_date_localized_raw_iso_datetime", reverse=true)
+                | sort(attribute="page.meta.git_revision_date_localized_raw_iso_datetime", reverse=true)
+                )[:10]
+            %}
+                <li class="md-nav__item">
+                <a class="md-nav__link" href="{{ file.url }}" style="display:block">
+                    {{ file.page.title }}
+                    <br/>
+                    <small>
+                    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago">
+                        <span class="timeago" datetime="{{ file.page.meta.git_revision_date_localized_raw_iso_datetime }}" locale="en"></span>
+                    </span>
+                    </small>
+                </a>
+                </li>
+            {% endfor %}
+            </ul>
+        </nav>
+        </div>
+    </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+  {{ super() }}
+
+  {% if git_page_authors %}
+    <div class="md-source-date">
+      <small>
+          Authors: {{ git_page_authors | default('enable mkdocs-git-authors-plugin') }}
+      </small>
+    </div>
+  {% endif %}
+{% endblock %}
