@@ -61,7 +61,7 @@
     # Argo must be bootstrapped into dev with a local git repo to pull from, prior to upgrading to prod, which requires secrets, which requires the cluster to be up.
     - name: Apply manifests
       ansible.builtin.command:
-        cmd: kubectl --kubeconfig /home/{{ ansible_user }}/.kube/config apply -k '/tmp/argo/bootstrap/envs/dev/'
+        cmd: kubectl --kubeconfig /home/{{ ansible_user }}/.kube/config apply -k '/tmp/argo/bootstrap/envs/prod/'
       retries: 5
       delay: 30
       register: result
