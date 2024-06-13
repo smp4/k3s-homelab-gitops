@@ -57,7 +57,7 @@
         - ./../../../../tenants
 
     # might fail if manifests are applied too quickly before argo CRDs are available in cluster, so retry.
-    # If this fails, it is very likely because of an error in the k8s config yaml, not ansible. Check your yaml builds with k kustomize build....
+    # If this fails, it is very likely because of an error in the k8s config yaml, not ansible. Check your yaml builds with k kustomize ....
     # Argo must be bootstrapped into dev with a local git repo to pull from, prior to upgrading to prod, which requires secrets, which requires the cluster to be up.
     - name: Apply manifests
       ansible.builtin.command:
@@ -68,9 +68,9 @@
       until: result.rc == 0
       changed_when: false  # was true
 
-    - name: Wait for all pods to be ready
-      ansible.builtin.shell: kubectl wait --kubeconfig /home/{{ ansible_user }}/.kube/config -A --for=condition=Ready pod --all --timeout=600s # noqa: command-instead-of-shell
-      changed_when: false      
+    - name: Wait for all kube-system pods to become ready  # we want kube-vip to be ready
+      ansible.builtin.shell: kubectl --kubeconfig /home/{{ ansible_user }}/.kube/config wait --namespace=kube-system --for=condition=Ready pod --all --timeout=600s  # noqa: command-instead-of-shell
+      changed_when: true
 
     - name: Change server to API endpoint instead of localhost
       ansible.builtin.command: >-

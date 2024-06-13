@@ -99,6 +99,7 @@ nav:
     - howtos/add-new-node.md
     - howtos/dynamic-environments.md
     - howtos/patching-argocd-cd.md
+    - howtos/argocd-local-repo.md
   - Explanations:
     - explanations/index.md
     - Cluster organisation: explanations/cluster-organisation.md

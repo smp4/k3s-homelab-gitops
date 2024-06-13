@@ -10,4 +10,4 @@ spec:
         repoURL: git@github.com:USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git
         revision: main
         files:
-          - path: "tenants/**/config.json"  # was tenants/*/envs/*/config.json
+          - path: "tenants/**/config.json"

@@ -9,7 +9,7 @@ spec:
   generators:
     - git:  # patched in overlays
         repoURL: git@github.com:USERNAME/REPONAME
-        revision: HEAD
+        revision: main
         files:
           - path: "infrastructure/**/config.json"
   template:
@@ -35,7 +35,7 @@ spec:
         - RespectIgnoreDifferences=true
       source:
         repoURL: file:///tmp/argo-gitops.git  # patched in overlays
-        targetRevision: HEAD  # patched in overlays
+        targetRevision: main  # patched in overlays
         path: "{{path}}"
       destination:
         server: https://kubernetes.default.svc

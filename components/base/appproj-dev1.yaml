@@ -9,7 +9,7 @@ metadata:
 spec:
   description: Developer-specified tenant applications
   sourceRepos:
-  - git@github.com:USERNAME/REPONAME  # patched in overlays
+    - git@github.com:USERNAME/REPONAME  # patched in overlays
   destinations:
   - namespace: '!kube-system'
     server: '*'

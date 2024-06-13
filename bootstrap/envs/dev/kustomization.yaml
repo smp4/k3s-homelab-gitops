@@ -7,3 +7,6 @@ namespace: argocd
 resources:
   - ../../base
   - ../../../components/envs/dev
+
+patches:
+  - path: patch-local-git-repo.yaml

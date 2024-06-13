@@ -10,5 +10,4 @@ spec:
       source:
         repoURL: git@github.com:USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git
         targetRevision: main
-# WARNING: MIGHT HAVE ERRORS IF /path IS NOT RETAINED FROM BASE
-      # path: "{{path}}"
+        path: "{{path}}"

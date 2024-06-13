@@ -17,7 +17,7 @@
     # - awk  # longhorn. ubuntu uses mawk by default.
     - nfs-common  # longhorn
     - jq  # longhorn
-    update_cache: true
+    #update_cache: true
 
 - name: Enable open-iscsi for longhorn
   ansible.builtin.systemd:

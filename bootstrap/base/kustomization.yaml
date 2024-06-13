@@ -5,9 +5,11 @@ kind: Kustomization
 namespace: argocd
 
 resources:
-  - ns-argocd.yaml
 #  - https://raw.githubusercontent.com/argoproj/argo-cd/master/manifests/install.yaml
-  - https://raw.githubusercontent.com/argoproj/argo-cd/master/manifests/ha/install.yaml
+#  - https://raw.githubusercontent.com/argoproj/argo-cd/master/manifests/ha/install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.1/manifests/install.yaml
+  - ns-argocd.yaml
+  - ingress-argo.yaml
 
 patches:
   - path: patch-argocd-cm-enableHelm.yaml

@@ -7,4 +7,3 @@ resources:
   - appproj-dev1.yaml
   - appset-infrastructure.yaml
   - appset-tenants.yaml
-  - ingress-argo.yaml
