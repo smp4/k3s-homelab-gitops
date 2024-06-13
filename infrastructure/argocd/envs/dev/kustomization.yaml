@@ -1,8 +1,0 @@
----
-# https://github.com/christianh814/example-kubernetes-go-repo
-
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-resources:
-  - ../../../../bootstrap/envs/dev/

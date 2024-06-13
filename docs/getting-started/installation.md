@@ -258,7 +258,7 @@ Manually edit the following `*.yaml` files to suit your preferences.
 
 | File | Key | Value | Comment |
 | - | - | - | - |
-| `components/base/ingress-argo.yaml` | `spec.routes.match:` | `Host('argocd.your.domain.com')` | URL for ArgoCD UI |
+| `bootstrap/base/ingress-argo.yaml` | `spec.routes.match:` | `Host('argocd.your.domain.com')` | URL for ArgoCD UI |
 | `components/envs/prod/patch-appproj-dev1-sourceRepos.yaml` | `spec.sourceRepos:` | Private Gitops Repo URL (ssh) | 
 | `components/envs/prod/patch-appset-infrastructure-generators.yaml` | `spec.generators.git.repoURL:`| Private Gitops Repo URL (ssh) |
 | `components/envs/prod/patch-appset-infrastructure-source.yaml` | `spec.template.spec.source.repoURL:`| Private Gitops Repo URL (ssh) |

@@ -8,8 +8,16 @@ resources:
 #  - secret-private-gh-credentials-sealed.yaml
 
 patches:
-  - path: patch-appproj-dev1-sourceRepos.yaml
-  - path: patch-appset-infrastructure-generators.yaml
-  - path: patch-appset-infrastructure-source.yaml
-  - path: patch-appset-tenants-generators.yaml
-  - path: patch-appset-tenants-source.yaml
+# use these for remote gitops repo
+  #- path: patch-appproj-dev1-sourceRepos.yaml
+  #- path: patch-appset-infrastructure-generators.yaml
+  #- path: patch-appset-infrastructure-source.yaml
+  #- path: patch-appset-tenants-generators.yaml
+  #- path: patch-appset-tenants-source.yaml
+
+# use these for locally hosted gitops repo
+  - path: patch-appproj-dev1-sourceRepos-local.yaml
+  - path: patch-appset-infrastructure-generators-local.yaml
+  - path: patch-appset-infrastructure-source-local.yaml
+  - path: patch-appset-tenants-generators-local.yaml
+  - path: patch-appset-tenants-source-local.yaml

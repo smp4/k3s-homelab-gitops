@@ -1,6 +1,0 @@
-{
-    "app": {
-        "name": "argocd-dev",
-        "namespace": "argocd"
-    }
-}

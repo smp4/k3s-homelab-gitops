@@ -40,16 +40,18 @@ See the [GitHub Docs](https://docs.github.com/en/authentication/connecting-to-gi
 !!! note
     ArgoCD does not support SSH private keys protected with a passphrase. See [issue#1894](https://github.com/argoproj/argo-cd/issues/1894).
 
+In your local repo:
 
 ```bash
 ssh-keygen -t ed25519 -C "your_email@example.com"  # your github account email
 
-# Save to a file ~/.ssh/id_ed25519-argocd
+# Save to a file "argocd-to-gh"
 # Leave the passphrase empty
 ```
 
 We won't be using this private key on a local machine and it isn't protected with a passphrase, so we do not need to add it to any key chain or `ssh-agent`.
 
+Copy the public key to your GitHub account.
 
 ### Create local plain text secrets
 
@@ -119,12 +121,12 @@ We can now use the public key to encrypt our secrets. From the project root dire
 kubeseal --format=yaml \
   --cert=pub-sealed-secrets.pem \
   --secret-file components/envs/prod/secret-private-gh-credentials.yaml.pass \
-  --sealed-secret-file secret-private-gh-credentials-sealed.yaml
+  --sealed-secret-file components/envs/prod/secret-private-gh-credentials-sealed.yaml
 
 kubeseal --format=yaml \
   --cert=pub-sealed-secrets.pem \
   --secret-file components/envs/prod/secret-private-gh-infra-repository.yaml.pass \
-  --sealed-secret-file secret-private-gh-infra-repository-sealed.yaml
+  --sealed-secret-file components/envs/prod/secret-private-gh-infra-repository-sealed.yaml
 ```
 
 As the ArgoCD docs [note](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#repositories), Sealed Secrets will remove the labels from the secret object we defined in the plain text file. We need to readd them manually. Add the following to the sealed yaml files:
@@ -169,30 +171,46 @@ resources:
 You can delete the `*.pass` files now if you wish, but you will need to recreate them to re-encrypt the secrets if you want to update them later.
 
 !!! warning
-  If using SSH and a custom Git repository, you will also need to add SSH known host public keys to ArgoCD. Argo already has the GitHub (and some others) known host keys built in, so in this case you don't need to do anything extra. See [the docs](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#ssh-known-host-public-keys).
+    If using SSH and a custom Git repository, you will also need to add SSH known host public keys to ArgoCD. Argo already has the GitHub (and some others) known host keys built in, so in this case you don't need to do anything extra. See [the docs](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#ssh-known-host-public-keys).
 
 This should be all the configuration changes we need.
 
-### Change ArgoCD environment from `dev` to `prod`
+You can now delete the public and private keys - they aren't needed anymore (the private key is stored in your cluster in a SealedSecret, and the public key is copied to GitHub).
 
-Rename the ArgoCD marker files to:
+### Push the new config to the cluster
 
-- `infrastructure/argocd/envs/dev/config.json.ignore`
-- `infrastructure/argocd/envs/prod/config.json`
+```bash
+# commit the new secrets to the gitops repo
+git push server-remote main
+```
 
-This will trigger ArgoCD to migrate itself to `prod`.
+Refresh the argo app in the UI. You wont see the new secrets in the cluster yet because we are still running ArgoCD in its `dev` environment. 
+
+### Change ArgoCD applictionSet files to remote repo
+
+Switch to the remote repo patch files in `components/envs/prod/kustomization.yaml`:
+
+```yaml
+patches:
+# use these for remote gitops repo
+  - path: patch-appproj-dev1-sourceRepos.yaml
+  - path: patch-appset-infrastructure-generators.yaml
+  - path: patch-appset-infrastructure-source.yaml
+  - path: patch-appset-tenants-generators.yaml
+  - path: patch-appset-tenants-source.yaml
+```
 
 
 ## Migrate to remote GitOps repo
 
-Commit all of the above changes and push them to the remote repo. Then push the changes to the local repo on the master node.
+Commit the above changes and push them to the remote repo. Then push the changes to the local repo on the master node.
 
 ```bash
 git push origin main
 git push server-remote main
 ```
 
-ArgoCD polls the repo every three minutes. If you can't wait that long, click `Sync` on the ArgoCD app in the UI. You should be able to watch ArgoCD move from `dev` to `prod`. Congratulations!
+ArgoCD polls the repo every three minutes. If you can't wait that long, click `Sync` on the ArgoCD app in the UI. Ideally, nothing should visibly change. Check which repo is being polled in Settings>Repositories. Congratulations!
 
 You now no longer need to push any code to the local repo on the master server node. Everything is on the remote repo and you can benefit from all the reliability that comes from the GitHub servers. 
 
