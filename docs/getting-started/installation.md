@@ -111,7 +111,7 @@ git merge upstream/main
 In your private repo, pull the updates from the public repo, then pull the latest refs from your private repo's remote, then push to your private repo's remote.
 
 ```bash
-git pull upstream main
+git pull --no-rebase upstream main
 git pull origin main
 git push origin main
 ```
