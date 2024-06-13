@@ -8,6 +8,6 @@ spec:
   template:
     spec:
       source:
-        repoURL: git@github.com:USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git
+        repoURL: https://github.com/USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git
         targetRevision: main
         path: "{{path}}"

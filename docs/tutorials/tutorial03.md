@@ -18,7 +18,7 @@ git push origin main
 
 We will now configure ArgoCD to use the remote repo as the source of truth for the cluster config. 
 
-Find the `repoURL: git@github.com:USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git` line in the following files and replace it with the URL to your private repo. You can get this URL by clicking on the "Code" button on the top right of the repo page on GitHub.
+Find the `repoURL: https://github.com/USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git` line in the following files and replace it with the URL to your private repo. You can get this URL by clicking on the "Code" button on the top right of the repo page on GitHub.
 
 - `components/envs/prod/patch-appset-infrastructure-generators.yaml`
 - `components/envs/prod/patch-appset-infrastructure-source.yaml`
@@ -33,9 +33,68 @@ These files configure where the cluster infrastructure and tenant workloads can 
 
 Repository details to be used with ArgoCD are stored in secrets. We will create a credential template so that the repository credentials can be re-used for any repo stored under your user profile on the remote host (eg. GitHub). The following assumes that you are using GitHub with an SSH connection. See [ArgoCD docs on repositories](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#repositories) for further information on other methods.
 
-### Create GitHub private key
+### Using GitHub Personal Access Token (PAT)
 
-See the [GitHub Docs](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh).
+This is the recommended method. It uses HTTPS to GitHub and a PAT for authentication.
+
+Resources:
+
+- [RedHat](https://www.redhat.com/en/blog/how-to-use-argocd-deployments-with-github-tokens).
+
+Create a [GitHub Personal Access Token (PAT)](https://github.com/settings/tokens) for your private repo. 
+
+Create the plain text secret:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gh-private-k3s-pat
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  url: https://github.com/USERNAME/REPO
+  password: Paste the PAT here
+  username: not-used
+```
+
+Then seal the secret:
+
+```bash
+kubeseal --format=yaml --cert=pub-sealed-secrets.pem --secret-file components/envs/prod/secret-private-gh-infra-repository-pat.yaml.pass --sealed-secret-file components/envs/prod/secret-private-gh-infra-repository-pat-sealed.yaml
+```
+
+Add it to kustomize:
+
+```yaml
+# components/envs/prod/kustomization.yaml
+
+resources:
+  - secret-private-gh-infra-repository-pat-sealed.yaml
+```
+
+Make sure the argo labels are retained in the sealed secret yaml:
+
+```yaml
+# secret-private-gh-infra-repository-pat-sealed.yaml
+...
+kind: SealedSecret
+...
+spec:
+  template:
+    metadata:
+      labels: 
+        "argocd.argoproj.io/secret-type": repository
+...
+```
+
+#### Using SSH
+
+!!! failure
+    Could not get this to work with a private GitHub repo over ssh. The repo would not authenticate.
+
+---
 
 !!! note
     ArgoCD does not support SSH private keys protected with a passphrase. See [issue#1894](https://github.com/argoproj/argo-cd/issues/1894).
@@ -53,7 +112,7 @@ We won't be using this private key on a local machine and it isn't protected wit
 
 Copy the public key to your GitHub account.
 
-### Create local plain text secrets
+**Create local plain text secrets**
 
 Sealed Secrets works by taking a Kubernetes secret object and encrypting it with a public key provided by the Sealed Secrets application (which is why the cluster must be deployed first, so the Sealed Secrets is available to perform this operation). 
 
@@ -99,12 +158,12 @@ metadata:
     argocd.argoproj.io/secret-type: repository
 stringData:
   type: git
-  url: git@github.com:USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git
+  url: https://github.com/USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git
 ```
 
 Replace the URLs with your correct username and repo address. 
 
-### Encrypt secrets
+**Encrypt secrets**
 
 Fetch the public key from Sealed secrets. In the root directory of your GitOps repo:
 

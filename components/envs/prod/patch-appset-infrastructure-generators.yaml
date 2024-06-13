@@ -7,7 +7,7 @@ metadata:
 spec:
   generators:
     - git:  
-        repoURL: git@github.com:USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git
+        repoURL: https://github.com/USERNAME/YOUR-PRIVATE-FORK-OF-THIS-REPO.git
         revision: main
         files:
           - path: "infrastructure/**/config.json"

@@ -59,3 +59,11 @@ local-reset:
 	rm ansible-local-reset.log
 	ANSIBLE_ENABLE_TASK_DEBUGGER=True ANSIBLE_LOG_PATH='ansible-local-reset.log' ANSIBLE_DISPLAY_ARGS_TO_STDOUT=True bash -c 'ansible-playbook -vvv -i ./ansible/inventory/localhost.yml --vault-id home@vault_pass ./ansible/playbooks/reset.yml'
 	rm -rfv /tmp/argo-gitops.git
+
+seal-secrets:
+	kubeseal --fetch-cert > pub-sealed-secrets.pem
+	kubeseal --format=yaml --cert=pub-sealed-secrets.pem --secret-file components/envs/prod/secret-private-gh-credentials.yaml.pass --sealed-secret-file components/envs/prod/secret-private-gh-credentials-sealed.yaml
+	kubeseal --format=yaml --cert=pub-sealed-secrets.pem --secret-file components/envs/prod/secret-private-gh-infra-repository.yaml.pass --sealed-secret-file components/envs/prod/secret-private-gh-infra-repository-sealed.yaml
+	kubeseal --format=yaml --cert=pub-sealed-secrets.pem --secret-file components/envs/prod/secret-private-gh-infra-repository-pat.yaml.pass --sealed-secret-file components/envs/prod/secret-private-gh-infra-repository-pat-sealed.yaml
+	kubeseal --format=yaml --cert=pub-sealed-secrets.pem --secret-file infrastructure/traefik/base/secret-traefik-dashboard.yaml.pass --sealed-secret-file infrastructure/traefik/base/secret-traefik-dashboard-sealed.yaml
+	kubeseal --format=yaml --cert=pub-sealed-secrets.pem --secret-file infrastructure/cert-manager/base/secret-cf-token.yaml.pass --sealed-secret-file infrastructure/cert-manager/base/secret-cf-token-sealed.yaml  
