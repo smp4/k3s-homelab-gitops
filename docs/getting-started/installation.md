@@ -106,6 +106,16 @@ git merge upstream/main
 !!! note
     This is not a fork. Create a fork if you want to contribute back to the public template.
 
+### Pulling updates from public repo
+
+In your private repo, pull the updates from the public repo, then pull the latest refs from your private repo's remote, then push to your private repo's remote.
+
+```bash
+git pull upstream main
+git pull origin main
+git push origin main
+```
+
 
 ## Install Ansible
 
